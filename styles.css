@@ -1,0 +1,70 @@
+/* Estilos tabla y botones */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+th {
+  background-color: #e0e0e0;
+}
+
+button {
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 5px 10px;
+  border: none;
+  font-size: 14px;
+  margin: 2px;
+}
+
+/* Botones específicos */
+button.delete-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+button.delete-btn:hover {
+  background-color: #c0392b;
+}
+button.edit-btn {
+  background-color: #3498db;
+  color: white;
+}
+button.edit-btn:hover {
+  background-color: #2980b9;
+}
+
+#btnAgregar {
+  background-color: #2ecc71;
+  color: white;
+  margin-bottom: 15px;
+}
+#btnAgregar:hover {
+  background-color: #27ae60;
+}
+
+/* Formularios de edición y agregado */
+.form-container {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  max-width: 600px;
+}
+
+.form-container input {
+  display: block;
+  margin-bottom: 10px;
+  padding: 6px;
+  width: 95%;
+}
+
+.form-container label {
+  font-weight: bold;
+}
+
+.form-container button {
+  padding: 6px 12px;
+}
