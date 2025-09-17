@@ -6,78 +6,114 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h1>Listado de Agendas</h1>
+  <div class="container">
 
-  <button id="btnAgregar">Agregar nuevo contacto</button>
+    <h1>Listado de Agendas</h1>
 
-  <table id="agendaTable">
-    <thead>
-      <tr>
-        <th>id</th>
-        <th>apellido</th>
-        <th>domicilio</th>
-        <th>email</th>
-        <th>nombre</th>
-        <th>telefono</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Filas generadas con JS -->
-    </tbody>
-  </table>
+    <div class="top-bar">
+      <button id="btnAgregar">Agregar nuevo contacto</button>
 
-  <!-- Formulario para modificar contacto -->
-  <div id="editFormContainer" class="form-container" style="display:none;">
-    <h2>Modificar contacto</h2>
-    <form id="editForm">
-      <label for="editId">ID:</label>
-      <input type="text" id="editId" readonly />
-      
-      <label for="editApellido">Apellido:</label>
-      <input type="text" id="editApellido" required />
-      
-      <label for="editDomicilio">Domicilio:</label>
-      <input type="text" id="editDomicilio" required />
-      
-      <label for="editEmail">Email:</label>
-      <input type="email" id="editEmail" required />
-      
-      <label for="editNombre">Nombre:</label>
-      <input type="text" id="editNombre" required />
-      
-      <label for="editTelefono">Teléfono:</label>
-      <input type="text" id="editTelefono" required />
-      
-      <button type="submit">Guardar cambios</button>
-      <button type="button" id="cancelEdit">Cancelar</button>
-    </form>
+      <div class="buscadores-buttons">
+        <button id="btnMostrarBuscarId">Buscar por ID</button>
+        <button id="btnMostrarBuscarTexto">Buscar por nombre o apellido</button>
+        <button id="btnLimpiarBusqueda">Limpiar búsqueda</button>
+      </div>
+    </div>
+
+    <!-- Buscadores -->
+    <div id="buscadorIdContainer" class="buscador-container" style="display:none;">
+      <input type="number" id="buscarPorId" placeholder="Ingrese ID" />
+      <button id="btnBuscarPorId">Buscar</button>
+      <button class="btnCerrarBuscador" data-target="buscadorIdContainer">Cerrar</button>
+    </div>
+
+    <div id="buscadorTextoContainer" class="buscador-container" style="display:none;">
+      <input type="text" id="buscarPorTexto" placeholder="Ingrese nombre o apellido" />
+      <button id="btnBuscarPorTexto">Buscar</button>
+      <button class="btnCerrarBuscador" data-target="buscadorTextoContainer">Cerrar</button>
+    </div>
+
+    <table id="agendaTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Domicilio</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Filas con JS -->
+      </tbody>
+    </table>
+
+    <!-- Formularios Edit y Add -->
+
+    <div id="editFormContainer" class="form-container" style="display:none;">
+      <h2>Modificar contacto</h2>
+      <form id="editForm">
+        <input type="hidden" id="editId" name="id" />
+        <div>
+          <label for="editNombre">Nombre:</label>
+          <input type="text" id="editNombre" name="nombre" required />
+        </div>
+        <div>
+          <label for="editApellido">Apellido:</label>
+          <input type="text" id="editApellido" name="apellido" required />
+        </div>
+        <div>
+          <label for="editDomicilio">Domicilio:</label>
+          <input type="text" id="editDomicilio" name="domicilio" required />
+        </div>
+         <div>
+          <label for="editTelefono">Teléfono:</label>
+          <input type="text" id="editTelefono" name="telefono" required />
+        </div>
+        <div>
+        <div>
+          <label for="editEmail">Email:</label>
+          <input type="email" id="editEmail" name="email" required />
+        </div>
+          <button type="submit">Guardar cambios</button>
+          <button type="button" id="cancelEdit" class="btn-cancelar">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="addFormContainer" class="form-container" style="display:none;">
+      <h2>Agregar nuevo contacto</h2>
+      <form id="addForm">
+        <div>
+          <label for="addNombre">Nombre:</label>
+          <input type="text" id="addNombre" name="nombre" required />
+        </div>
+        <div>
+          <label for="addApellido">Apellido:</label>
+          <input type="text" id="addApellido" name="apellido" required />
+        </div>
+        <div>
+          <label for="addDomicilio">Domicilio:</label>
+          <input type="text" id="addDomicilio" name="domicilio" required />
+        </div>
+        <div>
+          <label for="addTelefono">Teléfono:</label>
+          <input type="text" id="addTelefono" name="telefono" required />
+        </div>
+        <div>
+          <label for="addEmail">Email:</label>
+          <input type="email" id="addEmail" name="email" required />
+        </div>
+        <div>
+          <button type="submit">Agregar contacto</button>
+          <button type="button" id="cancelAdd" class="btn-cancelar">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
   </div>
-
-  <!-- Formulario para agregar contacto -->
-  <div id="addFormContainer" class="form-container" style="display:none;">
-    <h2>Agregar nuevo contacto</h2>
-    <form id="addForm">
-      <label for="addApellido">Apellido:</label>
-      <input type="text" id="addApellido" required />
-      
-      <label for="addDomicilio">Domicilio:</label>
-      <input type="text" id="addDomicilio" required />
-      
-      <label for="addEmail">Email:</label>
-      <input type="email" id="addEmail" required />
-      
-      <label for="addNombre">Nombre:</label>
-      <input type="text" id="addNombre" required />
-      
-      <label for="addTelefono">Teléfono:</label>
-      <input type="text" id="addTelefono" required />
-      
-      <button type="submit">Agregar contacto</button>
-      <button type="button" id="cancelAdd">Cancelar</button>
-    </form>
-  </div>
-
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,7 +1,48 @@
-const API_URL = 'http://localhost:8081/api/agenda'; 
+const API_URL = 'http://localhost:8081/api/agenda';
 
 window.addEventListener('DOMContentLoaded', () => {
   fetchAgendas();
+
+  // Botones buscadores
+  document.getElementById('btnMostrarBuscarId').addEventListener('click', () => {
+    document.getElementById('buscadorIdContainer').style.display = 'block';
+    document.getElementById('buscadorTextoContainer').style.display = 'none';
+  });
+  document.getElementById('btnMostrarBuscarTexto').addEventListener('click', () => {
+    document.getElementById('buscadorTextoContainer').style.display = 'block';
+    document.getElementById('buscadorIdContainer').style.display = 'none';
+  });
+  document.querySelectorAll('.btnCerrarBuscador').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const target = e.target.getAttribute('data-target');
+      document.getElementById(target).style.display = 'none';
+    });
+  });
+
+  // Buscar por ID
+  document.getElementById('btnBuscarPorId').addEventListener('click', () => {
+    const id = document.getElementById('buscarPorId').value.trim();
+    if (id !== '') {
+      buscarAgendaPorId(id);
+    }
+  });
+
+  // Buscar nombre o apellido
+  document.getElementById('btnBuscarPorTexto').addEventListener('click', () => {
+    const filtro = document.getElementById('buscarPorTexto').value.trim();
+    if (filtro !== '') {
+      buscarAgendaPorTexto(filtro);
+    }
+  });
+
+  // Limpiar búsqueda
+  document.getElementById('btnLimpiarBusqueda').addEventListener('click', () => {
+    document.getElementById('buscarPorId').value = '';
+    document.getElementById('buscarPorTexto').value = '';
+    document.getElementById('buscadorIdContainer').style.display = 'none';
+    document.getElementById('buscadorTextoContainer').style.display = 'none';
+    fetchAgendas();
+  });
 
   // Modificar contacto
   document.getElementById('editForm').addEventListener('submit', guardarCambios);
@@ -32,7 +73,7 @@ function llenarTabla(agendas) {
   const tbody = document.querySelector('#agendaTable tbody');
   tbody.innerHTML = '';
 
-  if (agendas.length === 0) {
+  if (!agendas || agendas.length === 0) {
     const fila = document.createElement('tr');
     fila.innerHTML = `<td colspan="7">No hay agendas registradas.</td>`;
     tbody.appendChild(fila);
@@ -43,11 +84,11 @@ function llenarTabla(agendas) {
     const fila = document.createElement('tr');
     fila.innerHTML = `
       <td>${agenda.id}</td>
+      <td>${agenda.nombre}</td>
       <td>${agenda.apellido}</td>
       <td>${agenda.domicilio}</td>
-      <td>${agenda.email}</td>
-      <td>${agenda.nombre}</td>
       <td>${agenda.telefono}</td>
+      <td>${agenda.email}</td>
       <td>
         <button class="edit-btn" data-id="${agenda.id}">Modificar</button>
         <button class="delete-btn" data-id="${agenda.id}">Eliminar</button>
@@ -56,7 +97,7 @@ function llenarTabla(agendas) {
     tbody.appendChild(fila);
   });
 
-  // Eventos botones
+  // Agregar listeners modificar y eliminar
   document.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       const id = e.target.getAttribute('data-id');
@@ -90,8 +131,6 @@ function eliminarAgenda(id) {
     });
 }
 
-// ---------- MODIFICAR CONTACTO ----------
-
 function mostrarFormularioEdit(id) {
   fetch(`${API_URL}/${id}`)
     .then(res => {
@@ -105,7 +144,7 @@ function mostrarFormularioEdit(id) {
       document.getElementById('editEmail').value = contacto.email;
       document.getElementById('editNombre').value = contacto.nombre;
       document.getElementById('editTelefono').value = contacto.telefono;
-      
+
       document.getElementById('editFormContainer').style.display = 'block';
       document.getElementById('addFormContainer').style.display = 'none';
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -125,6 +164,7 @@ function guardarCambios(event) {
 
   const id = document.getElementById('editId').value;
   const contactoEditado = {
+    id: Number(id), 
     apellido: document.getElementById('editApellido').value,
     domicilio: document.getElementById('editDomicilio').value,
     email: document.getElementById('editEmail').value,
@@ -154,25 +194,21 @@ function guardarCambios(event) {
     });
 }
 
-// ---------- AGREGAR CONTACTO ----------
-
 function mostrarFormularioAdd() {
-  document.getElementById('addFormContainer').style.display = 'block';
-  document.getElementById('editFormContainer').style.display = 'none';
-  limpiarFormularioAdd();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function ocultarFormularioAdd() {
-  document.getElementById('addFormContainer').style.display = 'none';
-}
-
-function limpiarFormularioAdd() {
+  // resetear formulario
   document.getElementById('addApellido').value = '';
   document.getElementById('addDomicilio').value = '';
   document.getElementById('addEmail').value = '';
   document.getElementById('addNombre').value = '';
   document.getElementById('addTelefono').value = '';
+
+  document.getElementById('addFormContainer').style.display = 'block';
+  document.getElementById('editFormContainer').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function ocultarFormularioAdd() {
+  document.getElementById('addFormContainer').style.display = 'none';
 }
 
 function agregarContacto(event) {
@@ -205,5 +241,40 @@ function agregarContacto(event) {
     .catch(error => {
       alert('Error al agregar el contacto');
       console.error(error);
+    });
+}
+
+// ------- Búsquedas --------
+
+function buscarAgendaPorId(id) {
+  fetch(`${API_URL}/${id}`)
+    .then(response => {
+      if (!response.ok) throw new Error('No se encontró el contacto');
+      return response.json();
+    })
+    .then(agenda => {
+      llenarTabla([agenda]); 
+    })
+    .catch(error => {
+      console.error('Error al buscar por ID:', error);
+      alert('No se encontró ningún contacto con ese ID.');
+    });
+}
+
+function buscarAgendaPorTexto(filtro) {
+  fetch(`${API_URL}/buscar?filtro=${encodeURIComponent(filtro)}`)
+    .then(response => {
+      if (!response.ok) throw new Error('Error en búsqueda');
+      return response.json();
+    })
+    .then(agendas => {
+      if (!agendas || agendas.length === 0) {
+        alert('No se encontraron contactos con ese nombre o apellido.');
+      }
+      llenarTabla(agendas);
+    })
+    .catch(error => {
+      console.error('Error al buscar por texto:', error);
+      alert('Error al realizar la búsqueda.');
     });
 }
